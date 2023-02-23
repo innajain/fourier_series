@@ -1,14 +1,15 @@
-// import mathJs from "../../node_modules/math.js/index"
-
-
-const WIDTH = 720
-const HEIGHT = 736
-const my_function = (x) => {
-  const ans = (x) => {
-    if (Math.floor(x/0.5)%2==0) {return 1}
-    else {return 0}
+class fourier_element {
+  constructor (A, n) {
+    this.A =A
+    this.n =n
   }
-  return [ans(x), 0]
+}
+
+class fourier {
+  constructor (omega, arr) {
+    this.omega = omega
+    this.data = arr
+  }
 }
 
 const fourier_transform = (func, n, delta_t=0.01) => {
@@ -23,33 +24,17 @@ const fourier_transform = (func, n, delta_t=0.01) => {
   if (Math.abs(sum[1])<10**-5) sum[1]=0
   return sum
 }
-class fourier_element {
-  constructor (A, n) {
-    this.A =A
-    this.n =n
+
+const trail = (toShow) => {
+  beginShape()
+  stroke(255)
+  noFill()
+  for (let i=0; i<toShow.length; i++) {
+    vertex(toShow[i][0], toShow[i][1])
   }
+  endShape()
 }
 
-class fourier {
-  constructor (omega, arr) {
-    this.omega = omega
-    this.data = arr
-  }
-}
-const n=50
-const my_fourier = new fourier((n/50), [
-])
-// console.log(my_fourier.data[0].A)
-for (let i=-n; i<n+1; i++) {
-    my_fourier.data.push(
-        new fourier_element(fourier_transform(my_function, i, 0.01), i)
-      )
-  }
-let toShow = []
-let time=0
-function setup() {
-  createCanvas(WIDTH, HEIGHT);
-}
 const createRotatingPoint= (pos, radius, frequency, final=false, phase = 0) => {
   
   stroke(50)
@@ -64,39 +49,85 @@ const createRotatingPoint= (pos, radius, frequency, final=false, phase = 0) => {
     fill(50)
   }
   ellipse(x,y,10)
-  return [x,y]
+return [x,y]
 }
 
 const draw_fourier = (series, multiplier) => {
-  let [x,y] = [100, HEIGHT/2]
+  let [x,y] = [WIDTH/3, HEIGHT/2]
   for (let i=0; i<series.data.length; i++) {
     if (i==series.data.length-1) {
       [x,y] = createRotatingPoint([x,y], series.data[i].A.map((item)=> {return item*multiplier}), series.data[i].n * series.omega, true, 0)
     }
     else {
-    [x,y] = createRotatingPoint([x,y], series.data[i].A.map((item)=> {return item*multiplier}), series.data[i].n * series.omega, false, 0)
+      [x,y] = createRotatingPoint([x,y], series.data[i].A.map((item)=> {return item*multiplier}), series.data[i].n * series.omega, false, 0)
     }
-
+    
   }
   return [x,y] 
 }
 
 
-const trail = (toShow) => {
-  beginShape()
-  stroke(255)
-  noFill()
-  for (let i=0; i<toShow.length; i++) {
-    vertex(toShow[i][0], toShow[i][1])
+
+
+
+
+
+
+
+
+
+const my_function = (x) => {
+  const ans = (x) => {
+    if (Math.floor(x/0.5)%2==0) {return 1}
+    else {return 0}
+  }  
+  return [ans(x), 0]
+}  
+
+const n=50
+const my_fourier = new fourier(1, [
+])  
+
+for (let i=-n; i<n+1; i++) {
+  my_fourier.data.push(
+    new fourier_element(fourier_transform(my_function, i, 0.01), i)
+    )
+  }    
+
+
+
+
+
+
+
+
+
+
+
+
+const WIDTH = 1536
+const HEIGHT = 864
+let toShow = []
+let time=0
+const multiplier = 200
+const trail_length = HEIGHT/2
+
+
+
+
+
+
+
+function setup() {
+  createCanvas(WIDTH, HEIGHT);
   }
-  endShape()
-}
 function draw() {
+
   background(0);
   
-  let final = draw_fourier(my_fourier, 200)
+  let final = draw_fourier(my_fourier, multiplier)
   toShow.push(final)
-  if (toShow.length>369) toShow.shift()
+  if (toShow.length>trail_length) toShow.shift()
   
   
   // trail(toShow)
@@ -104,12 +135,11 @@ function draw() {
   stroke(255)
   noFill()
   for (let i=0; i<toShow.length; i++) {
-    vertex(toShow[toShow.length-i-1][1]+i, toShow[toShow.length-i-1][0])
+    vertex(toShow[toShow.length-i-1][0], toShow[toShow.length-i-1][1]+i)
   }
   endShape()
   stroke(255)
   fill(255)
-  // line(0,HEIGHT/2,   WIDTH, HEIGHT/2)
   
 
   time+=0.01
